@@ -4,7 +4,9 @@ import data from "./data.json";
 import Products from "./components/Products";
 import Filter from "./components/Filter";
 import Cart from "./components/Cart";
-function App() {
+import store from "./store";
+import { Provider } from "react-redux";
+function App(props) {
   const [state, setState] = useState({
     products: data.products,
     cartItems: localStorage.getItem("cartItems")
@@ -43,7 +45,6 @@ function App() {
     localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
   };
   const sortProducts = (e) => {
-    console.log(e.target.value);
     const sort = e.target.value;
     setState((state) => ({
       sort: sort,
@@ -65,7 +66,6 @@ function App() {
     }));
   };
   const filterProducts = (e) => {
-    console.log(e.target.value);
     if (e.target.value === "") {
       setState({ size: e.target.value, product: data.products });
     } else {
@@ -78,33 +78,35 @@ function App() {
     }
   };
   return (
-    <div className="grid-container">
-      <header className="App-header">
-        <a href="/">React Shopping Cart</a>
-      </header>
-      <main>
-        <div className="content">
-          <div className="main">
-            <Filter
-              count={state.products.length}
-              size={state.size}
-              sort={state.sort}
-              filterProducts={filterProducts}
-              sortProducts={sortProducts}
-            />
-            <Products data={state.products} addToCart={addToCart} />
+    <Provider store={store}>
+      <div className="grid-container">
+        <header className="App-header">
+          <a href="/">React Shopping Cart</a>
+        </header>
+        <main>
+          <div className="content">
+            <div className="main">
+              <Filter
+                count={state.products.length}
+                size={state.size}
+                sort={state.sort}
+                filterProducts={filterProducts}
+                sortProducts={sortProducts}
+              />
+              <Products data={state.products} addToCart={addToCart} />
+            </div>
+            <div className="sidebar">
+              <Cart
+                cartItems={state.cartItems}
+                removeFromCart={removeFromCart}
+                saveOrder={saveOrder}
+              />
+            </div>
           </div>
-          <div className="sidebar">
-            <Cart
-              cartItems={state.cartItems}
-              removeFromCart={removeFromCart}
-              saveOrder={saveOrder}
-            />
-          </div>
-        </div>
-      </main>
-      <footer>All right is reserved</footer>
-    </div>
+        </main>
+        <footer>All right is reserved</footer>
+      </div>
+    </Provider>
   );
 }
 
